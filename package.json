@@ -1,0 +1,16 @@
+{
+  "name": "lumi-payslip-webhook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Webhook tạo phiếu lương PDF từ Lark Base (nút 'Ra bảng lương' ở bảng 2.3)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}
