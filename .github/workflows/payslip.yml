@@ -1,0 +1,42 @@
+name: Tạo phiếu lương
+
+# Kích hoạt bằng:
+#  - repository_dispatch (nút Lark gọi API GitHub, event_type = "payslip")
+#  - workflow_dispatch  (bấm tay trên GitHub để test)
+on:
+  repository_dispatch:
+    types: [payslip]
+  workflow_dispatch:
+    inputs:
+      record_id:
+        description: "Record ID dòng ở bảng 2.3 (ưu tiên)"
+        required: false
+      person:
+        description: "Tên nhân sự (nếu không có record_id)"
+        required: false
+      month:
+        description: "Tháng dạng MM/YYYY (nếu không có record_id)"
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cài thư viện
+        run: npm install --no-audit --no-fund
+
+      - name: Tạo phiếu lương và đính vào Lark
+        env:
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          EVENT_RECORD_ID: ${{ github.event.client_payload.record_id || github.event.inputs.record_id }}
+          EVENT_PERSON: ${{ github.event.client_payload.person || github.event.inputs.person }}
+          EVENT_MONTH: ${{ github.event.client_payload.month || github.event.inputs.month }}
+        run: node run-action.js
